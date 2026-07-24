@@ -9,6 +9,8 @@ services:
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
+      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev        # new
+      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test  # new
 
   web-db:
     build:
