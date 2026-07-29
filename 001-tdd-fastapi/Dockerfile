@@ -16,7 +16,7 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 COPY pyproject.toml ./
 RUN pip install --upgrade "uvicorn[standard]>=0.34.1"
-RUN pip install .
+RUN pip install .[dev]
 
 # add app
 COPY . .

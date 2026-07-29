@@ -12,6 +12,15 @@ def get_settings_override():
     return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_URL"))
 
 
+@pytest.fixture(autouse=True)
+def mock_generate_summary(monkeypatch):
+    async def _mock_generate_summary(summary_id: int, url: str) -> None:
+        from app.models.tortoise import TextSummary
+        await TextSummary.filter(id=summary_id).update(summary="mock summary")
+
+    monkeypatch.setattr("app.api.summaries.generate_summary", _mock_generate_summary)
+
+
 @pytest.fixture(scope="module")
 def test_app():
     # set up

@@ -1,15 +1,12 @@
-import json
-
-
 def test_create_summary(test_app_with_db):
-    response = test_app_with_db.post("/summaries/", content=json.dumps({"url": "https://foo.bar"}))
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
 
     assert response.status_code == 201
     assert response.json()["url"] == "https://foo.bar/"
 
 
 def test_create_summaries_invalid_json(test_app):
-    response = test_app.post("/summaries/", content=json.dumps({}))
+    response = test_app.post("/summaries/", json={})
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
@@ -22,13 +19,13 @@ def test_create_summaries_invalid_json(test_app):
         ]
     }
 
-    response = test_app.post("/summaries/", content=json.dumps({"url": "invalid://url"}))
+    response = test_app.post("/summaries/", json={"url": "invalid://url"})
     assert response.status_code == 422
     assert response.json()["detail"][0]["msg"] == "URL scheme should be 'http' or 'https'"
 
 
 def test_read_summary(test_app_with_db):
-    response = test_app_with_db.post("/summaries/", content=json.dumps({"url": "https://foo.bar"}))
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.get(f"/summaries/{summary_id}/")
@@ -62,7 +59,7 @@ def test_read_summary_incorrect_id(test_app_with_db):
 
 
 def test_read_all_summaries(test_app_with_db):
-    response = test_app_with_db.post("/summaries/", content=json.dumps({"url": "https://foo.bar"}))
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.get("/summaries/")
@@ -72,9 +69,7 @@ def test_read_all_summaries(test_app_with_db):
     assert len(list(filter(lambda d: d["id"] == summary_id, response_list))) == 1
 
 def test_remove_summary(test_app_with_db):
-    response = test_app_with_db.post(
-        "/summaries/", content=json.dumps({"url": "https://foo.bar"})
-    )
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.delete(f"/summaries/{summary_id}/")
@@ -102,14 +97,12 @@ def test_remove_summary_incorrect_id(test_app_with_db):
     }
 
 def test_update_summary(test_app_with_db):
-    response = test_app_with_db.post(
-        "/summaries/", content=json.dumps({"url": "https://foo.bar"})
-    )
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.put(
         f"/summaries/{summary_id}/",
-        content=json.dumps({"url": "https://foo.bar", "summary": "updated!"})
+        json={"url": "https://foo.bar", "summary": "updated!"}
     )
     assert response.status_code == 200
 
@@ -123,14 +116,14 @@ def test_update_summary(test_app_with_db):
 def test_update_summary_incorrect_id(test_app_with_db):
     response = test_app_with_db.put(
         "/summaries/999/",
-        content=json.dumps({"url": "https://foo.bar", "summary": "updated!"})
+        json={"url": "https://foo.bar", "summary": "updated!"}
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Summary not found"
 
     response = test_app_with_db.put(
         f"/summaries/0/",
-        content=json.dumps({"url": "https://foo.bar", "summary": "updated!"})
+        json={"url": "https://foo.bar", "summary": "updated!"}
     )
     assert response.status_code == 422
     assert response.json() == {
@@ -147,14 +140,12 @@ def test_update_summary_incorrect_id(test_app_with_db):
 
 
 def test_update_summary_invalid_json(test_app_with_db):
-    response = test_app_with_db.post(
-        "/summaries/", content=json.dumps({"url": "https://foo.bar"})
-    )
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.put(
         f"/summaries/{summary_id}/",
-        content=json.dumps({})
+        json={}
     )
     assert response.status_code == 422
     assert response.json() == {
@@ -176,14 +167,12 @@ def test_update_summary_invalid_json(test_app_with_db):
 
 
 def test_update_summary_invalid_keys(test_app_with_db):
-    response = test_app_with_db.post(
-        "/summaries/", content=json.dumps({"url": "https://foo.bar"})
-    )
+    response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.put(
         f"/summaries/{summary_id}/",
-        content=json.dumps({"url": "https://foo.bar"})
+        json={"url": "https://foo.bar"}
     )
     assert response.status_code == 422
     assert response.json() == {
