@@ -1,3 +1,4 @@
 htmlcov
 .coverage
 .ruff_cache
+tests/__pycache__
