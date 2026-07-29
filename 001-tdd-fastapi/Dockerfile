@@ -1,5 +1,4 @@
-
-FROM python:3.13.3-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 # set working directory
 WORKDIR /usr/src/app
@@ -10,13 +9,14 @@ ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
 RUN apt-get update \
-  && apt-get -y install netcat-traditional gcc postgresql \
-  && apt-get clean
+   && apt-get -y install netcat-traditional gcc postgresql \
+   && apt-get clean
 
 # install python dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml ./
+RUN pip install --upgrade "uvicorn[standard]>=0.34.1"
+RUN pip install .
 
 # add app
 COPY . .
