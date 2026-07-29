@@ -13,6 +13,8 @@ dependencies = [
     "aerich>=0.8.2",
     "httpx2>=0.1.0",
     "gunicorn>=22.0.0",
+    "lxml-html-clean==0.4.2",
+    "newspaper3k==0.2.8",
 ]
 
 [project.optional-dependencies]
