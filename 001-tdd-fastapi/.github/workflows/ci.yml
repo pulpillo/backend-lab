@@ -2,10 +2,17 @@ name: Continuous Integration
 
 on:
   push:
+    paths:
+      - '001-tdd-fastapi/**'
+      - '.github/workflows/ci.yml'
   pull_request:
+    paths:
+      - '001-tdd-fastapi/**'
+      - '.github/workflows/ci.yml'
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}
+  IMAGE: ghcr.io/${{ github.repository }}/001-tdd-fastapi
+  PROJECT_DIR: 001-tdd-fastapi
 
 jobs:
   lint:
@@ -26,12 +33,15 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
         run: uv sync --all-extras
 
       - name: Run Ruff (lint)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: uv run ruff check .
 
       - name: Run Ruff (format)
+        working-directory: ${{ env.PROJECT_DIR }}
         run: uv run ruff format --check .
 
   test:
@@ -67,9 +77,11 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
         run: uv sync --all-extras
 
       - name: Run tests with coverage
+        working-directory: ${{ env.PROJECT_DIR }}
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/web_dev
           DATABASE_TEST_URL: postgres://postgres:postgres@localhost:5432/web_test
@@ -81,7 +93,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./coverage.xml
+          files: ${{ env.PROJECT_DIR }}/coverage.xml
           fail_ci_if_error: false
 
   build:
@@ -119,8 +131,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile.prod
+          context: ${{ env.PROJECT_DIR }}
+          file: ${{ env.PROJECT_DIR }}/Dockerfile.prod
           push: true
           tags: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
           cache-from: type=gha
