@@ -88,7 +88,7 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -103,12 +103,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [[ ${{ github.ref }} == refs/heads/main ]]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.event_name }} == pull_request ]]; then
+            echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile.prod
           push: true
-          tags: ${{ env.IMAGE }}:latest
+          tags: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
