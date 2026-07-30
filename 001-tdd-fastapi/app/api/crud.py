@@ -1,6 +1,5 @@
-from app.models.pydantic import SummaryPayloadSchema,SummaryUpdatePayloadSchema
+from app.models.pydantic import SummaryPayloadSchema, SummaryUpdatePayloadSchema
 from app.models.tortoise import TextSummary
-from app.summarizer import generate_summary
 
 
 async def post(payload: SummaryPayloadSchema) -> int:
@@ -20,9 +19,11 @@ async def get_all() -> list:
     summaries = await TextSummary.all().values()
     return summaries
 
+
 async def delete(id: int) -> int:
     summary = await TextSummary.filter(id=id).first().delete()
     return summary
+
 
 async def put(id: int, payload: SummaryUpdatePayloadSchema) -> dict | None:
     summary = await TextSummary.filter(id=id).update(url=payload.url, summary=payload.summary)

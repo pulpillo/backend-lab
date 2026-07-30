@@ -51,10 +51,12 @@ test/
 # app/main.py
 from fastapi import FastAPI
 
+
 def create_application() -> FastAPI:
     app = FastAPI(title="My API", version="0.1.0")
     app.include_router(api.router, prefix="/api")
     return app
+
 
 app = create_application()
 ```
@@ -66,6 +68,7 @@ app = create_application()
 from fastapi import Depends
 from tortoise import Tortoise
 
+
 async def get_db():
     yield Tortoise.db
 ```
@@ -76,13 +79,16 @@ async def get_db():
 # app/models/pydantic.py
 from pydantic import BaseModel, AnyHttpUrl, Field
 
+
 class SummaryCreate(BaseModel):
     url: AnyHttpUrl
+
 
 class SummaryResponse(SummaryCreate):
     id: int
     summary: str
     created_at: datetime
+
 
 class SummaryUpdate(BaseModel):
     summary: str = Field(min_length=1)
@@ -94,6 +100,7 @@ class SummaryUpdate(BaseModel):
 # app/api/exceptions.py
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
+
 
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -108,6 +115,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 ```python
 # test/test_summaries.py
+
 
 def test_create_summary(test_app_with_db):
     # Arrange
@@ -134,12 +142,14 @@ from tortoise.contrib.fastapi import register_tortoise
 from app.config import Settings, get_settings
 from app.main import create_application
 
+
 @pytest.fixture
 def test_app():
     app = create_application()
     app.dependency_overrides[get_settings] = lambda: Settings(testing=True)
     with TestClient(app) as client:
         yield client
+
 
 @pytest.fixture
 def test_app_with_db():
@@ -164,6 +174,7 @@ from fastapi import APIRouter, BackgroundTasks
 
 router = APIRouter()
 
+
 @router.post("/", response_model=SummaryResponse, status_code=201)
 async def create_summary(
     payload: SummaryCreate,
@@ -183,6 +194,7 @@ For heavy/background work, consider Celery or Arq instead of FastAPI background 
 ```python
 # app/models/tortoise.py
 from tortoise import fields, models
+
 
 class TextSummary(models.Model):
     id = fields.IntField(pk=True)

@@ -8,5 +8,6 @@ class SummaryPayloadSchema(BaseModel):
 class SummaryResponseSchema(SummaryPayloadSchema):
     id: int
 
+
 class SummaryUpdatePayloadSchema(SummaryPayloadSchema):
     summary: str

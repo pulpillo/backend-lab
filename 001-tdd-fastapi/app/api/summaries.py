@@ -1,7 +1,11 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Path
 
 from app.api import crud
-from app.models.pydantic import SummaryPayloadSchema, SummaryResponseSchema, SummaryPayloadSchema, SummaryUpdatePayloadSchema
+from app.models.pydantic import (
+    SummaryPayloadSchema,
+    SummaryResponseSchema,
+    SummaryUpdatePayloadSchema,
+)
 from app.models.tortoise import SummarySchema
 from app.summarizer import generate_summary
 
@@ -17,6 +21,7 @@ async def create_summary(payload: SummaryPayloadSchema, background_tasks: Backgr
     response_object = {"id": summary_id, "url": payload.url}
     return response_object
 
+
 @router.get("/{id}/", response_model=SummarySchema)
 async def read_summary(id: int = Path(..., gt=0)) -> SummarySchema:
     summary = await crud.get(id)
@@ -30,6 +35,7 @@ async def read_summary(id: int = Path(..., gt=0)) -> SummarySchema:
 async def read_all_summaries() -> list[SummarySchema]:
     return await crud.get_all()
 
+
 @router.delete("/{id}/", response_model=SummaryResponseSchema)
 async def delete_summary(id: int = Path(..., gt=0)) -> SummaryResponseSchema:
     summary = await crud.get(id)
@@ -39,6 +45,7 @@ async def delete_summary(id: int = Path(..., gt=0)) -> SummaryResponseSchema:
     await crud.delete(id)
 
     return summary
+
 
 @router.put("/{id}/", response_model=SummarySchema)
 async def update_summary(payload: SummaryUpdatePayloadSchema, id: int = Path(..., gt=0)) -> SummarySchema:

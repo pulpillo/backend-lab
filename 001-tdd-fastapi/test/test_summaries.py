@@ -68,6 +68,7 @@ def test_read_all_summaries(test_app_with_db):
     response_list = response.json()
     assert len(list(filter(lambda d: d["id"] == summary_id, response_list))) == 1
 
+
 def test_remove_summary(test_app_with_db):
     response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
@@ -96,13 +97,13 @@ def test_remove_summary_incorrect_id(test_app_with_db):
         ]
     }
 
+
 def test_update_summary(test_app_with_db):
     response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
     response = test_app_with_db.put(
-        f"/summaries/{summary_id}/",
-        json={"url": "https://foo.bar", "summary": "updated!"}
+        f"/summaries/{summary_id}/", json={"url": "https://foo.bar", "summary": "updated!"}
     )
     assert response.status_code == 200
 
@@ -114,17 +115,11 @@ def test_update_summary(test_app_with_db):
 
 
 def test_update_summary_incorrect_id(test_app_with_db):
-    response = test_app_with_db.put(
-        "/summaries/999/",
-        json={"url": "https://foo.bar", "summary": "updated!"}
-    )
+    response = test_app_with_db.put("/summaries/999/", json={"url": "https://foo.bar", "summary": "updated!"})
     assert response.status_code == 404
     assert response.json()["detail"] == "Summary not found"
 
-    response = test_app_with_db.put(
-        f"/summaries/0/",
-        json={"url": "https://foo.bar", "summary": "updated!"}
-    )
+    response = test_app_with_db.put("/summaries/0/", json={"url": "https://foo.bar", "summary": "updated!"})
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
@@ -143,10 +138,7 @@ def test_update_summary_invalid_json(test_app_with_db):
     response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
-    response = test_app_with_db.put(
-        f"/summaries/{summary_id}/",
-        json={}
-    )
+    response = test_app_with_db.put(f"/summaries/{summary_id}/", json={})
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
@@ -161,7 +153,7 @@ def test_update_summary_invalid_json(test_app_with_db):
                 "loc": ["body", "summary"],
                 "msg": "Field required",
                 "type": "missing",
-            }
+            },
         ]
     }
 
@@ -170,10 +162,7 @@ def test_update_summary_invalid_keys(test_app_with_db):
     response = test_app_with_db.post("/summaries/", json={"url": "https://foo.bar"})
     summary_id = response.json()["id"]
 
-    response = test_app_with_db.put(
-        f"/summaries/{summary_id}/",
-        json={"url": "https://foo.bar"}
-    )
+    response = test_app_with_db.put(f"/summaries/{summary_id}/", json={"url": "https://foo.bar"})
     assert response.status_code == 422
     assert response.json() == {
         "detail": [

@@ -16,6 +16,7 @@ def get_settings_override():
 def mock_generate_summary(monkeypatch):
     async def _mock_generate_summary(summary_id: int, url: str) -> None:
         from app.models.tortoise import TextSummary
+
         await TextSummary.filter(id=summary_id).update(summary="mock summary")
 
     monkeypatch.setattr("app.api.summaries.generate_summary", _mock_generate_summary)
