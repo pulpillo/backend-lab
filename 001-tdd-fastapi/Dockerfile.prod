@@ -1,6 +1,10 @@
 # pull official base image
 FROM python:3.14-slim-bookworm
 
+LABEL org.opencontainers.image.source=https://github.com/pulpillo/backend-lab
+LABEL org.opencontainers.image.description="TDD Fast API backend"
+LABEL org.opencontainers.image.licenses=MIT
+
 # create directory for the app user
 RUN mkdir -p /home/app
 

@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - '001-tdd-fastapi/**'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/01-tdd-fastapi/ci.yml'
   pull_request:
     paths:
       - '001-tdd-fastapi/**'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/01-tdd-fastapi/ci.yml'
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/001-tdd-fastapi
